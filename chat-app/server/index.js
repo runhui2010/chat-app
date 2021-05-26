@@ -8,7 +8,7 @@ const io=require('socket.io')(server, {
 
 
 io.on('connection', function(socket) {
-    console.log('A user connected')
+    console.log('people connected')
     socket.on('msg',(data)=>{
         console.log(data)
     })

@@ -1,0 +1,19 @@
+
+
+.login_container{
+    width: 100%;
+    height: 90vh;
+    display: grid;
+    place-items: center;
+    
+
+}
+form{
+    background-color: lightskyblue;
+    border: 1px solid black;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30%;
+}
