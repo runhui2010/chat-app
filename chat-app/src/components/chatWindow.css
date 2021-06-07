@@ -12,13 +12,51 @@
 }
 .chat_body{
     flex:10;
+    overflow-y: auto;
 }
 .chat_footer{
+    width: 100%;
     margin: 0;
     flex:1;
     display: flex;
+    flex-direction: row;
 }
 .chat_footer input{
+    flex:6;
+}
+button{
+    flex:1;
+}
+.msg{
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    
+    margin:5px;
+    
 
-    flex:5;
+}
+.time,.text,.sender{
+    margin: 0px;
+}
+.text{
+    background-color: greenyellow;
+    border-radius: 12px;
+    padding: 10px;
+}
+.time{
+    align-self: flex-end;
+}
+.time,.sender{
+    font-size: x-small;
+    opacity: .5;
+}
+.own{
+    margin-left: auto;
+    
+}
+.others{
+    background-color:lightgray ;
 }
