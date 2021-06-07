@@ -10,31 +10,25 @@ import {
   Switch,
   Route,
 } from "react-router-dom";
-import UserContext from './components/UserContext';
+import CurrUserContext from './components/CurrUserContext';
 
 
 function App() {
+  const [currUser,setCurrUser]=useState({name:'',room:''})
   
-  // const socket = io("http://localhost:8000");
-  // useEffect(() => {
-    
-  //   socket.emit("msg","first msg")
-  // }, [])
- 
-  const [users,setUsers]=useState([])
 
 
   return (
     <Router>
       <Switch>
-        <UserContext.Provider value={[users,setUsers]}>
+        <CurrUserContext.Provider value={[currUser,setCurrUser]}>
         <Route exact path='/'>
           <Login/>
         </Route>
         <Route path='/window'>
           <Window/>
         </Route>
-        </UserContext.Provider>
+        </CurrUserContext.Provider>
       </Switch>
     </Router>
      

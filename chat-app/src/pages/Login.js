@@ -1,34 +1,47 @@
-import React, { useState,useContext } from 'react'
+import React, { useState,useContext ,useEffect} from 'react'
 import './login.css'
 import {v4 as uuidv4} from 'uuid'
 import {Link} from 'react-router-dom'
-import UserContext from '../components/UserContext'
+import axios from 'axios'
+import rooms from '../data/rooms'
+import CurrUserContext from '../components/CurrUserContext'
 
 const Login = () => {
-    const [users,setUsers]=useContext(UserContext)
-    const newUser=()=>{
-        let username=document.getElementById('username').value
+    
+    const [currUser,setCurrUser]=useContext(CurrUserContext)
+    
+    useEffect(() => {
+        console.log('user:'+currUser.user,'room:'+currUser.room)
+    }, [currUser])
+    const newUser=(e)=>{
+        // e.preventDefault()
+        let user=document.getElementById('username').value
         let room=document.getElementById('room').value
-        var user={id:uuidv4(),name:username,room:room}
+        var newUser={name:user,room:room}
+        console.log("user:"+newUser.name)
+        var temp={...currUser}
+        temp.name=user
+        temp.room=room
+        setCurrUser(temp)
+        console.log(temp.user)
+        try{
+            axios.post("http://localhost:8000/new",newUser)
+        }catch(e){
+            console.log(e)
+        }
+
         
-        var storedUser=JSON.parse(localStorage.getItem('users'))
-        if(storedUser==null)storedUser=[]
-        storedUser[storedUser.length]=user
-        console.log(storedUser)
-        setUsers(storedUser)
-        localStorage.setItem("users",JSON.stringify(storedUser))
+
     }
 
     return (
         <div className='login_container'>
             <form >
                 <label htmlFor="username">username</label>
-                <input type="text" name="username" id="username"  />
+                <input type="text" name="username" id="username" autoComplete="off" />
                 <label htmlFor="room">room</label>
                 <select name="room" id="room">
-                    <option value="room1">room1</option>
-                    <option value="room2">room2</option>
-                    
+                    {rooms.map(room=><option value={room} key={uuidv4()}>{room}</option>)}      
                 </select>
                 <Link to="/window" onClick={newUser}>Submit</Link>
             </form>

@@ -6,7 +6,7 @@ const Window = () => {
     return (
         <div className='chat_room'>
             <SideWindow/>
-            <ChatWindow/>
+            <ChatWindow />
         </div>
     )
 }

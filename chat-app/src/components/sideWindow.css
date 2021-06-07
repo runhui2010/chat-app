@@ -21,7 +21,8 @@
     flex:4;
 }
 .room{
-    flex:10; 
+    flex:10;
+    overflow:auto;
 }
 ul{
     padding: 0;
