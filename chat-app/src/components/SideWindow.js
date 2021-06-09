@@ -21,19 +21,20 @@ const SideWindow = () => {
     return (
         <div className="side_window">
             <div className="profile">
-                <span>avatar</span>
-                <div>{'user: '+currUser.name}  {"room: "+currUser.room}  {users.length}</div>
+                <img src={currUser.avatar}/>
+                <ul>
+                    <li>{'Name: '+currUser.name}</li>
+                    <li>{'Room: '+currUser.room}</li> 
+                    <li>{'Users:'+ users.length}</li>  
+                </ul>
              </div>
             <div className="search">
-                <span>logo</span>
                 <input type="text" placeholder="search" />
             </div>
             <ul className='room'>
                 
                 {users&&users.map(user=> 
                     <li key={user._id}>{user.name} {user.room}</li>
-                    
-                
                 )}
                 
             </ul>
