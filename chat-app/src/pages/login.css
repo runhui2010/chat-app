@@ -1,19 +1,47 @@
 
 
 .login_container{
-    width: 100%;
-    height: 90vh;
-    display: grid;
-    place-items: center;
     
+    width: 80%;
+    height: 90vh;
+   display: grid;
+   place-items:center;
+}
+
+.loginInput{
+    display: flex;
+    padding: 5px;
+   height: 20px;
+   width: auto;
+    
+}
+.loginInput label{
+    width: 30%;
+    
+}
+.loginInput select,.loginInput input{
+    width: 60%;
+}
+.loginBtn{
+    margin:20px auto;
+    display: block;
+    
+}
+.btn{
+    text-decoration: none;
+    border:1px solid black;
+    margin: 0 50px;
+    background-color: rgb(231, 228, 228);
+    color: black;
+    padding:5px;
+    width: 50px;
 
 }
-form{
-    background-color: lightskyblue;
+.login_container form{
+    background-color: rgb(225, 238, 247);
     border: 1px solid black;
     text-align: center;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 30%;
+    padding: 30px;
+    width: 50%;
 }
+
