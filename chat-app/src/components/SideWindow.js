@@ -3,16 +3,11 @@ import  './sideWindow.css'
 import CurrUserContext from './CurrUserContext'
 
 const SideWindow = () => {
-    const [users,setUsers] = useState([])
+    const [users,setUsers] = useContext(UsersContext)
     const [currUser,setCurrUser]=useContext(CurrUserContext)
+    const [roomUsers,setRoomUsers]=useState([])
     useEffect(() => {
-        fetch('http://localhost:8000/users').then(res=>{
-            if(res.ok)return res.json()
-        }).then(jsonRes=>{
-            console.log(jsonRes)
-            setUsers(jsonRes.filter(i=>i.room===currUser.room))
-        })
-
+        setRoomUsers(users.filter(i=>i.room===currUser.room))
     }, [currUser])
     useEffect(() => {
         console.log(users,currUser)
