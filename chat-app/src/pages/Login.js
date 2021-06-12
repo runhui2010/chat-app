@@ -7,32 +7,35 @@ import rooms from '../data/rooms'
 import CurrUserContext from '../components/CurrUserContext'
 import GoogleLogin from 'react-google-login'
 import { set } from 'mongoose'
+import UsersContext from '../components/UsersContext'
 
 const Login = () => {
-    
+    const [users,setUsers] = useContext(UsersContext)
     const [currUser,setCurrUser]=useContext(CurrUserContext)
     const [login,setLogin]=useState({
         name:"",
         password:"",
+        room:""
     })
+    const [done,setDone]=useState(false)
 
     
-    useEffect(() => {
-        console.log('user:'+currUser.user,'room:'+currUser.room)
 
+    useEffect(() => {
         fetch('http://localhost:8000/users').then(res=>{
             if(res.ok)return res.json()
-        }).then(jsonRes=>{
-            console.log(jsonRes,jsonRes.map(i=>i.name).includes(currUser.name))
-            
-            if(!jsonRes.map(i=>i.name).includes(currUser.name)){
-                try{
-                    axios.post("http://localhost:8000/new",currUser)
-                     }catch(e){
-                    console.log(e)
-                    }
+                }).then(jsonRes=>{
+            setUsers(jsonRes)
+            })
+            console.log(currUser)
+        if(currUser.name!==''){
+            if(!users.map(i=>i.name).includes(currUser.name)){
+                axios.post("http://localhost:8000/new",currUser)
+            }else{
+                axios.put('http://localhost:8000/user',currUser)
             }
-        })
+            setDone(true)
+        } 
         
     }, [currUser])
 
@@ -43,37 +46,55 @@ const Login = () => {
             setCurrUser({...currUser,name:res.profileObj.givenName, room:room,password:res.accessToken, avatar:res.profileObj.imageUrl,isSignedIn:true})
             
           }
-        const loginUser=(e)=>{
-            // e.preventDefault()
+        const  loginUser=async(e)=>{
+            e.preventDefault()
+            if(login.name!==''){
+                const fetchUser=users.filter(i=>i.name===login.name)
+                console.log(fetchUser)
+                if(fetchUser.length===0){
+                    setLogin({...login,name:'',password:''})   
+                } else{
+                    
+                    if(fetchUser[0].password===login.password){
+                        console.log(login)
+                        await setCurrUser({...currUser,name:login.name, room:login.room,password:login.password, avatar:"",isSignedIn:true})
+                        await axios.put('http://localhost:8000/user',currUser)
+                        
+                    }else{
+                        setLogin({...login,name:'',password:''})   
+                    }
+                } 
+                    
+                
+            }
+            
+        }
+        const updateInput=()=>{
             const loginName=document.getElementById('username').value
             const loginPassword=document.getElementById('password').value
-            setLogin({...login,name:loginName,password:loginPassword})
+            const room=document.getElementById('room').value
+            setLogin({...login,name:loginName,password:loginPassword,room:room})
         }
-        useEffect(() => {
-            console.log(login)
-        }, [login])
-    
-
     return (
         <div className='login_container'>
             <form >
                 <h2>Login</h2>
                 <div className='loginInput'>
                     <label htmlFor="username">Username: </label>
-                    <input type="text" name="username" id="username" required/>
+                    <input type="text" name="username" id="username" value={login.name} onChange={updateInput}  placeholder='username'  autoComplete='off' required/>
                 </div>
                 <div className='loginInput'>
                     <label htmlFor="password">Password: </label>
-                    <input type="password" name="password" id="password" required/>
+                    <input type="password" name="password" id="password" value={login.password} onChange={updateInput} placeholder='username' placeholder='password' required/>
                 </div>
                 <div className='loginInput'>
                     <label htmlFor="room">ChatRoom:</label>
-                    <select name="room" id="room">
-                        {rooms.map(room=><option value={room} key={uuidv4()}>{room}</option>)}      
+                    <select name="room" id="room" value={login.room} onChange={updateInput}>
+                        {rooms.map(room=><option  key={uuidv4()}>{room}</option>)}      
                     </select>
                 </div>
               <div className="loginBtn">
-                  <Link to='/signin' className='btn'>Sign in</Link>
+                  <Link  to='/signin' className='btn' id='signIn' >Sign in</Link>
                   <button className='btn' id='login' onClick={loginUser}>Login</button>
               </div>
                 <GoogleLogin 
@@ -82,9 +103,10 @@ const Login = () => {
                     onFailure={responseGoogle}
                     cookiePolicy={'single_host_origin'}
                 >
-                {currUser.isSignedIn && <Redirect to='/window'/>}
                 </GoogleLogin>
+                
           </form>
+          {done && <Redirect to='/window'/>}
         </div>
     )
 }

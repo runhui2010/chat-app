@@ -2,8 +2,8 @@ const mongoose = require("mongoose")
 
 const userSchema={
     name:String,
-    password:String,
     room:String,
+    password:String,
     avatar:String,
     isSignedIn:Boolean
 

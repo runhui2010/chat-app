@@ -15,18 +15,19 @@ import {
 } from "react-router-dom";
 import CurrUserContext from './components/CurrUserContext';
 import SignIn from './pages/SignIn';
+import UsersContext from './components/UsersContext';
 
 
 function App() {
   const [currUser,setCurrUser]=useState({name:'',room:'',password:'',avatar:'',isSignedIn:false})
-
+  const [users,setUsers]=useState([])
   
-
 
   return (
     
     <Router>
       <Switch>
+        <UsersContext.Provider value={[users,setUsers]}>
         <CurrUserContext.Provider value={[currUser,setCurrUser]}>
         <Route exact path='/'>
           <Login/>
@@ -38,6 +39,7 @@ function App() {
         <Window/>
       </Route>
       </CurrUserContext.Provider>
+      </UsersContext.Provider>
     </Switch>
   </Router>
         
