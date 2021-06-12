@@ -55,7 +55,14 @@ button{
 }
 .own{
     margin-left: auto;
-    
+}
+.adminMsg{
+    margin:auto;
+}    
+
+.admin{
+    font-size: x-small;
+    color: gray;
 }
 .others{
     background-color:lightgray ;

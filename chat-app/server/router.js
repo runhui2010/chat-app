@@ -2,7 +2,6 @@ const { json } = require('express')
 const express=require('express')
 const router=express.Router()
 const User=require('./userModel')
-const Login=require('./loginModel')
 
 router.route("/new").post((req,res)=>{
     console.log(req.body)
@@ -13,17 +12,38 @@ router.route("/new").post((req,res)=>{
     const isSignedIn=req.body.isSignedIn
     const user=new User({name,room,password,avatar,isSignedIn})
 
-    user.save()
+    user.save().then(data => {
+        res.status(200).json(data);
+    }).catch(err => {
+        res.status(500).json({
+          message: "Fail!",
+          error: err.message
+        });
+    });
 })
 
-router.route('/login').get((req,res)=>{
-    Login.find((data)=>{
-        res.send(data)
-    })
-})
+
 router.route("/users").get((req,res)=>{
     User.find(function(err,data){
-        res.send(data) 
+        res.status(200).send(data) 
+    }).catch(err => {
+        res.status(500).json({
+          message: "Fail!",
+          error: err.message
+        });
+    });
+})
+
+router.route('/user').put((req,res)=>{
+    User.findOneAndUpdate({name:req.body.name},{room:req.body.room,isSignedIn:req.body.isSignedIn},{new:true},function(err,data){
+        if(err){
+            res.status(500).json({
+                message: "Fail!",
+                error: err.message
+              });
+        }else{
+            res.status(200).send(data) 
+        }
     })
 })
 
