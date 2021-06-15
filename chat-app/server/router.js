@@ -10,7 +10,8 @@ router.route("/new").post((req,res)=>{
     const password=req.body.password
     const avatar=req.body.avatar
     const isSignedIn=req.body.isSignedIn
-    const user=new User({name,room,password,avatar,isSignedIn})
+    const socketID=req.body.socketID
+    const user=new User({name,room,password,avatar,isSignedIn,socketID})
 
     user.save().then(data => {
         res.status(200).json(data);
@@ -35,7 +36,7 @@ router.route("/users").get((req,res)=>{
 })
 
 router.route('/user').put((req,res)=>{
-    User.findOneAndUpdate({name:req.body.name},{room:req.body.room,isSignedIn:req.body.isSignedIn},{new:true},function(err,data){
+    User.findOneAndUpdate({name:req.body.name},{room:req.body.room,isSignedIn:req.body.isSignedIn,socketID:req.body.socketID},{new:true},function(err,data){
         if(err){
             res.status(500).json({
                 message: "Fail!",

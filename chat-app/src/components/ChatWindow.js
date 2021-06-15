@@ -17,42 +17,32 @@ const ChatWindow = () => {
         text:"",
         sender:'',
         recipient:'',
-        time:''
+        time:'',
+        socketID:''
     })
     const [chat,setChat]=useState([])      
    
-    const socket = useRef()
-
-   
-
-    useEffect(() => {
-        socket.current=io.connect("http://localhost:8000");
-        socket.current.on('connection',(data)=>{
-            setChat((chat)=>[...chat,data])
-        })
-        socket.current.on('msg',(data)=>{
-            if(data.text!=""){
-                console.log("receive data from server:"+ data.text)
-                  setChat((chat)=>[...chat,data])
-                  
-            }
-        
-        })
-        socket.current.on('inOut',(data)=>{
-            setChat(chat=>[...chat,data])
-        })
-        
-    }, [msg])
+    const socket=io.connect('http://localhost:8000'
+    )
     
+    useEffect(() => {
+        socket.on('new',(d)=>{
+            socket.emit('name',currUser.name)
+            console.log(d)
+        })
+        return () => {
+            socket.off('new',(d)=>{
+                console.log(d)
+            })
+        }
+    }, [])
+   
 useEffect(() => {
     console.log(chat)
 }, [chat])
-const changeRoom= ()=>{
+const changeRoom= async()=>{
     const value=document.getElementById("chat_room").value
-    setCurrUser({...currUser,room:value})
-    console.log(users,currUser)
-
-    
+    setCurrUser({...currUser,room:value}) 
 }
 useEffect(() => {
     console.log(users)
@@ -61,12 +51,11 @@ useEffect(() => {
 useEffect(async() => {
     console.log(currUser)
     await axios.put('http://localhost:8000/user',currUser)
-    await fetch('http://localhost:8000/users').then(res=>{
-        if(res.ok)return res.json()
-            }).then(jsonRes=>{
-        console.log(jsonRes)
-        setUsers(jsonRes)
-        })
+    const res=await fetch('http://localhost:8000/users')
+    const data=await res.json()
+        console.log(data)
+        setUsers(data)
+        
     
 }, [currUser])
 
@@ -75,17 +64,16 @@ useEffect(()=>{
     
 },[msg])
 
-const  sendMsg=(e)=>{
+const  sendMsg=async(e)=>{
     e.preventDefault()
     const text=document.getElementById('text').value
     const sender=currUser.name
     const recipient=currUser.room
     const time=moment().format('h:mm:s a')
     const newMsg={text:text,sender:sender,recipient:recipient,time:time}
-           setMsg({...msg,text:text,sender:sender,recipient:recipient,time:time})
+            setMsg({...msg,text:text,sender:sender,recipient:recipient,time:time})
             document.getElementById('text').value=""
-            socket.current.emit('msg',newMsg)
-            setChat([...chat,newMsg])
+            await socket.emit('msg',newMsg)
     
     document.getElementById('text').focus()
 }   

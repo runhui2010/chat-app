@@ -3,36 +3,45 @@ const mongoose=require("mongoose")
 const cors=require("cors")
 const app=require('express')()
 const server=require('http').createServer(app)
-const io=require('socket.io')(server, {
-    cors: {
-      origin: '*',
-    }
-  });
+const io = require('socket.io')()
+io.attach(server, {
+  cors: {
+      origin: "http://localhost:3000",
+      methods: ["GET", "POST"],
+      transports: ['websocket', 'polling'],
+      credentials: true
+  },
+  allowEIO3: true
+});
+
 app.use(cors())
 app.use(express.json())
 
 mongoose.connect("mongodb+srv://run:8616716@cluster0.beu1u.mongodb.net/chat-app")
 app.use('/',require("./router"))
 
-io.on('connection', function(socket) {    
-    socket.broadcast.emit('connection',{text:"someone connected",
-    sender:'Admin',
-    recipient:'Room1',
-    time:''})
-    socket.on('msg',(data)=>{
-      console.log('msg from users:'+data.text)
-      socket.broadcast.emit('msg',data)
-        
-    })
-    socket.on('disconnect',function(){
-      console.log(socket)
-      socket.broadcast.emit('inOut',{text:"someone left",
-      sender:'Admin',
-      recipient:'Room1',
-      time:''})
-    })
+let activeUsers = {};
 
-})
+io.on("connection", (socket) => {
+  const id=socket.id
+    console.log(`Client connected [id=${socket.id}]`);
+    console.log(activeUsers.size)
+    socket.emit('new','hello')
+
+    socket.on('name',(data)=>{
+      
+      activeUsers[id]=data
+      console.log(activeUsers)
+      
+        io.emit('name',activeUsers)
+      
+    })
+    socket.on("disconnect", () => {
+      delete activeUsers[id] 
+        console.log(activeUsers)
+        io.emit('name',activeUsers)
+    });
+});
 
 
 
