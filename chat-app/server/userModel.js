@@ -5,7 +5,8 @@ const userSchema={
     room:String,
     password:String,
     avatar:String,
-    isSignedIn:Boolean
+    isSignedIn:Boolean,
+    socketID:String
 
 }
 
