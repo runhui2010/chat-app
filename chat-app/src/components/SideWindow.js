@@ -4,48 +4,74 @@ import CurrUserContext from './CurrUserContext'
 import UsersContext from './UsersContext'
 import io from 'socket.io-client'
 import { set } from 'mongoose'
+import axios from 'axios'
 
 const SideWindow = () => {
     const [users,setUsers] = useContext(UsersContext)
     const [currUser,setCurrUser]=useContext(CurrUserContext)
-    const [roomUsers,setRoomUsers]=useState([])
+    const [rooms,setRooms]=useState([])
 
 
-    const socket=io.connect('http://localhost:8000'
-    )
-    useEffect(()=>{
-        console.log(roomUsers)
-    },[roomUsers])
-    useEffect(() => {
-        socket.on('name',(name)=>{
-            var arr=[]
-            for(let i in name){
-                arr.unshift(name[i])
-            }
-            setRoomUsers(arr)
-      
-        })
-        return () => {
-            socket.off('name',(d)=>{
-                console.log(d)
-            })
+    const socket=io.connect('http://localhost:8000')
+    
+
+    const changeRoom= (e)=>{
+        fetchRoom()
+        document.getElementById('searchRoom').value=''
+        const value=e.target.id
+        setCurrUser({...currUser,room:value}) 
+        
+    }
+    const createNewRoom=(e)=>{
+        e.preventDefault()
+        const value=document.getElementById('newRoomName').value
+        if(value!='' && !rooms.map(room=>room.name).includes(value) ){
+            setRooms([...rooms,{name:value}])
+            axios.post('http://localhost:8000/newRoom',{name:value})
+        }else{
+            document.getElementById('newRoomName').focus()
         }
-    }, [])
-    // useEffect(async()=>{
-    //     // var res=await fetch('http://localhost:8000/users')
-    //     // var data=await res.json()
-    //     // await setUsers(data)
-    //     await fetch('http://localhost:8000/users').then(res=>{
-    //         console.log(currUser)
-    //         if(res.ok)return res.json()
-    //             }).then(jsonRes=>{
-    //         console.log(jsonRes)
-    //         setUsers(jsonRes)
-    //         })
-    // },[roomUsers])
-    // useEffect( () => {             
-    //         setRoomUsers(users.filter(i=>i.room===currUser.room) )    
-    // }, [users])
+        document.getElementById('newRoomName').value=''
+        
+    }
+    const deleteRoom=(e)=>{
+        console.log("delete....")
+         axios.post('http://localhost:8000/remove',{name:e.target.id})
+        var temp=[...rooms]
+        temp=temp.filter(i=>i.name!==e.target.id)
+        console.log(temp)
+        setRooms(temp)
+    }
+    const searchRoom=()=>{
+        var value=document.getElementById('searchRoom').value
+        if(!value==''){
+            var temp=[...rooms]
+            temp=temp.filter(i=>i.name.includes(value))
+            console.log(temp)
+            setRooms(temp)
+        }else{
+            fetchRoom()
+        }
+    }
+    useEffect(() => { 
+        console.log(currUser)
+    }, [currUser])
+    useEffect(() => {
+        console.log(rooms)
+    }, [rooms])
+    useEffect(async()=>{
+        fetchRoom()
+        
+    },[])
+    const fetchRoom=async()=>{
+        await fetch('http://localhost:8000/rooms').then(res=>{
+            console.log(rooms)
+            if(res.ok)return res.json()
+                }).then(jsonRes=>{
+            console.log(jsonRes)
+            setRooms(jsonRes)
+            })
+    }
   
     return (
         <div className="side_window">
@@ -54,20 +80,24 @@ const SideWindow = () => {
                 <ul>
                     <li>{'Name: '+currUser.name}</li>
                     <li>{'Room: '+currUser.room}</li> 
-                    <li>{'Users:'+ roomUsers.length}</li>  
                 </ul>
              </div>
             <div className="search">
-                <input type="text" placeholder="search" />
+                <input type="text" id='searchRoom' placeholder="search..." onChange={searchRoom}/>
             </div>
             <ul className='room'>
                 
                 {
-                   roomUsers&&roomUsers.map((user,i)=>
-                    <li key={i}>{user}</li>)
+                  rooms.map((room,i)=>
+                      <li key={i} id={room.name} onClick={changeRoom} onDoubleClick={deleteRoom}>{room.name}</li>
+                  )
                 }
                 
             </ul>
+            <form className="createRoom">
+                <input type="text" id='newRoomName' placeholder='enter group name...'/>
+                <button type='submit' onClick={createNewRoom}>Create</button>
+            </form>
         </div>
     )
 }

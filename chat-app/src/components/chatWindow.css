@@ -24,7 +24,7 @@
 .chat_footer input{
     flex:6;
 }
-button{
+.chat_footer button{
     flex:1;
 }
 .msg{
