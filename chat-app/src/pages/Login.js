@@ -42,8 +42,7 @@ const Login = () => {
     
         const responseGoogle=(res)=>{
             console.log(res)
-            let room=document.getElementById('room').value
-            setCurrUser({...currUser,name:res.profileObj.givenName, room:room,password:res.accessToken, avatar:res.profileObj.imageUrl,isSignedIn:true})
+            setCurrUser({...currUser,name:res.profileObj.givenName,password:res.accessToken, avatar:res.profileObj.imageUrl,isSignedIn:true})
             
           }
         const  loginUser=async(e)=>{
@@ -57,7 +56,7 @@ const Login = () => {
                     
                     if(fetchUser[0].password===login.password){
                         console.log(login)
-                        await setCurrUser({...currUser,name:login.name, room:login.room,password:login.password, avatar:"",isSignedIn:true})
+                        await setCurrUser({...currUser,name:login.name,password:login.password, avatar:"",isSignedIn:true})
                         await axios.put('http://localhost:8000/user',currUser)
                         
                     }else{
@@ -72,8 +71,8 @@ const Login = () => {
         const updateInput=()=>{
             const loginName=document.getElementById('username').value
             const loginPassword=document.getElementById('password').value
-            const room=document.getElementById('room').value
-            setLogin({...login,name:loginName,password:loginPassword,room:room})
+            // const room=document.getElementById('room').value
+            setLogin({...login,name:loginName,password:loginPassword})
         }
     return (
         <div className='login_container'>
@@ -87,12 +86,12 @@ const Login = () => {
                     <label htmlFor="password">Password: </label>
                     <input type="password" name="password" id="password" value={login.password} onChange={updateInput} placeholder='username' placeholder='password' required/>
                 </div>
-                <div className='loginInput'>
+                {/* <div className='loginInput'>
                     <label htmlFor="room">ChatRoom:</label>
                     <select name="room" id="room" value={login.room} onChange={updateInput}>
                         {rooms.map(room=><option  key={uuidv4()}>{room}</option>)}      
                     </select>
-                </div>
+                </div> */}
               <div className="loginBtn">
                   <Link  to='/signin' className='btn' id='signIn' >Sign in</Link>
                   <button className='btn' id='login' onClick={loginUser}>Login</button>

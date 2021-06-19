@@ -24,8 +24,6 @@ let activeUsers = {};
 
 io.on("connection", (socket) => {
   const id=socket.id
-    console.log(`Client connected [id=${socket.id}]`);
-    socket.emit('new','hello')
 
     socket.on('name',(data)=>{
       
@@ -34,12 +32,10 @@ io.on("connection", (socket) => {
       
         io.emit('name',activeUsers)
       
+        
+      
     })
-    socket.on("disconnect", () => {
-      delete activeUsers[id] 
-        console.log('disconnect'+activeUsers)
-        io.emit('name',activeUsers)
-    });
+   
 });
 
 

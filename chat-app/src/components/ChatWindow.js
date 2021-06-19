@@ -37,23 +37,12 @@ const ChatWindow = () => {
         }
     }, [])
    
-useEffect(() => {
-    console.log(chat)
-}, [chat])
-const changeRoom= async()=>{
-    const value=document.getElementById("chat_room").value
-    setCurrUser({...currUser,room:value}) 
-}
-useEffect(() => {
-    console.log(users)
-    
-}, [users])
+
+
 useEffect(async() => {
-    console.log(currUser)
     await axios.put('http://localhost:8000/user',currUser)
     const res=await fetch('http://localhost:8000/users')
     const data=await res.json()
-        console.log(data)
         setUsers(data)
         
     
@@ -86,11 +75,7 @@ ref.current.scrollIntoView({ behavior: "smooth" })
     return (
         <div className='chat_window'>
             <div className="chat_header">
-                <select name="chat_room" id="chat_room" value={currUser.room} onChange={changeRoom}>
-                    {rooms.map(room=>
-                    <option value={room} key={rooms.indexOf(room)} >{room}</option>
-                    )}
-                </select>
+                <h2>{currUser.room}</h2>
             </div>
             <div className="chat_body" >
                 {chat.filter(i=>i.recipient===currUser.room).map(m=>
