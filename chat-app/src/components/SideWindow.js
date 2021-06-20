@@ -9,95 +9,101 @@ import axios from 'axios'
 const SideWindow = () => {
     const [users,setUsers] = useContext(UsersContext)
     const [currUser,setCurrUser]=useContext(CurrUserContext)
-    const [rooms,setRooms]=useState([])
+    const [groups,setGroups]=useState([])
+    const [add,setAdd]=useState(false)
 
 
-    const socket=io.connect('http://localhost:8000')
+    // const socket=io.connect('http://localhost:8000')
     
 
-    const changeRoom= (e)=>{
-        fetchRoom()
-        document.getElementById('searchRoom').value=''
+    const changeGroup= (e)=>{
+        fetchGroup()
+        document.getElementById('searchGroup').value=''
         const value=e.target.id
-        setCurrUser({...currUser,room:value}) 
+        setCurrUser({...currUser,to:value}) 
         
     }
-    const createNewRoom=(e)=>{
+    const createNewGroup=(e)=>{
         e.preventDefault()
-        const value=document.getElementById('newRoomName').value
-        if(value!='' && !rooms.map(room=>room.name).includes(value) ){
-            setRooms([...rooms,{name:value}])
-            axios.post('http://localhost:8000/newRoom',{name:value})
+        const value=document.getElementById('newGroupName').value
+        document.getElementById('newGroupName').value=''
+        console.log(value!='' && !groups.includes(value) )
+        if(value!='' && !groups.includes(value) ){
+            const temp=groups.slice()
+            temp.push(value)
+            console.log( temp)
+            setCurrUser({...currUser,groups:temp})
+            setAdd(!add)
         }else{
-            document.getElementById('newRoomName').focus()
-        }
-        document.getElementById('newRoomName').value=''
-        
-    }
-    const deleteRoom=(e)=>{
-        console.log("delete....")
-         axios.post('http://localhost:8000/remove',{name:e.target.id})
-        var temp=[...rooms]
-        temp=temp.filter(i=>i.name!==e.target.id)
-        console.log(temp)
-        setRooms(temp)
-    }
-    const searchRoom=()=>{
-        var value=document.getElementById('searchRoom').value
-        if(!value==''){
-            var temp=[...rooms]
-            temp=temp.filter(i=>i.name.includes(value))
-            console.log(temp)
-            setRooms(temp)
-        }else{
-            fetchRoom()
+            document.getElementById('newGroupName').focus()
         }
     }
-    useEffect(() => { 
-        console.log(currUser)
+    
+    useEffect(async() => {
+        setGroups(currUser.groups)
+        await axios.put('http://localhost:8000/user',currUser)
     }, [currUser])
-    useEffect(() => {
-        console.log(rooms)
-    }, [rooms])
+
+    const deleteGroup=(e)=>{
+        console.log("delete....")
+        const groupIndex=groups.indexOf(e.target.id)
+        const temp=groups.slice()
+        temp.splice(groupIndex,1)
+        console.log(temp)
+        setGroups(temp)
+        // setCurrUser({...currUser,groups:temp})        
+    }
+    const searchGroup=()=>{
+        var value=document.getElementById('searchGroup').value
+        if(!value==''){
+            var temp=currUser.groups.filter(i=>i.includes(value))
+            setGroups(temp)
+        }else{
+            fetchGroup()
+        }
+    }
+
+   
     useEffect(async()=>{
-        fetchRoom()
-        
+        fetchGroup()
     },[])
-    const fetchRoom=async()=>{
-        await fetch('http://localhost:8000/rooms').then(res=>{
-            console.log(rooms)
+    const fetchGroup=async()=>{
+        await fetch('http://localhost:8000/users').then(res=>{
+            console.log(groups)
             if(res.ok)return res.json()
-                }).then(jsonRes=>{
-            console.log(jsonRes)
-            setRooms(jsonRes)
+                }).then(users=>{
+            console.log(users)
+            const groups=users.filter(i=>i.name===currUser.name)
+            console.log(groups)
+            setCurrUser(groups[0])
+            
             })
     }
   
     return (
         <div className="side_window">
-            <div className="profile">
-                <img src={currUser.avatar}/>
-                <ul>
-                    <li>{'Name: '+currUser.name}</li>
-                    <li>{'Room: '+currUser.room}</li> 
-                </ul>
-             </div>
+            <h2>Group</h2>
             <div className="search">
-                <input type="text" id='searchRoom' placeholder="search..." onChange={searchRoom}/>
+                <input type="text" id='searchGroup' placeholder="search..." onChange={searchGroup} autoComplete='off'/>
             </div>
-            <ul className='room'>
+            <ul className='group'>
                 
                 {
-                  rooms.map((room,i)=>
-                      <li key={i} id={room.name} onClick={changeRoom} onDoubleClick={deleteRoom}>{room.name}</li>
+                  groups.map((group,i)=>
+                      <li key={i} id={i} onClick={changeGroup} onDoubleClick={deleteGroup}>{group}</li>
                   )
                 }
                 
             </ul>
-            <form className="createRoom">
-                <input type="text" id='newRoomName' placeholder='enter group name...'/>
-                <button type='submit' onClick={createNewRoom}>Create</button>
-            </form>
+            {add && <form className="createGroup">
+                
+                <input type="text" id='newGroupName' placeholder='enter group name...' autoComplete='off'/>
+                <button type='submit' onClick={createNewGroup}>Create</button>
+            </form>}
+            {!add && <button className='add' onClick={()=>{
+                setAdd(!add)
+            }}>+</button>}
+            
         </div>
     )
 }
