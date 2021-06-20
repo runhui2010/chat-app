@@ -8,6 +8,7 @@ import {v4 as uuidv4} from 'uuid'
 import io from 'socket.io-client'
 import axios from 'axios'
 import UsersContext from './UsersContext'
+import Avatar from 'react-avatar'
 
 const ChatWindow = () => {
     const ref = useRef()
@@ -75,6 +76,11 @@ ref.current.scrollIntoView({ behavior: "smooth" })
     return (
         <div className='chat_window'>
             <div className="chat_header">
+                <div className='userInfo'>
+                    {currUser.avatar===''?<Avatar name={currUser.name} round={true} size='30'/>:<img src={currUser.avatar} alt="" height='40px' style={{borderRadius:'50%'}}/>}
+                    <span>{currUser.name}</span>
+                </div>
+            
                 <h2>{currUser.room}</h2>
             </div>
             <div className="chat_body" >

@@ -22,21 +22,21 @@ app.use('/',require("./router"))
 
 let activeUsers = {};
 
-io.on("connection", (socket) => {
-  const id=socket.id
+// io.on("connection", (socket) => {
+//   const id=socket.id
 
-    socket.on('name',(data)=>{
+//     socket.on('name',(data)=>{
       
-      activeUsers[id]=data
-      console.log(activeUsers)
+//       activeUsers[id]=data
+//       console.log(activeUsers)
       
-        io.emit('name',activeUsers)
+//         io.emit('name',activeUsers)
       
         
       
-    })
+//     })
    
-});
+// });
 
 
 

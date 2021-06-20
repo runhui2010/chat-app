@@ -14,50 +14,54 @@ const Login = () => {
     const [currUser,setCurrUser]=useContext(CurrUserContext)
     const [login,setLogin]=useState({
         name:"",
-        password:"",
-        room:""
+        password:""
     })
     const [done,setDone]=useState(false)
 
     
 
-    useEffect(() => {
-        fetch('http://localhost:8000/users').then(res=>{
+    useEffect(async() => {
+       await fetch('http://localhost:8000/users').then(res=>{
             if(res.ok)return res.json()
                 }).then(jsonRes=>{
             setUsers(jsonRes)
+            if(currUser.name!==''){ 
+                if(!jsonRes.map(i=>i.name).includes(currUser.name)){
+                    axios.post("http://localhost:8000/new",currUser)
+                }
+              
+                setDone(true)
+            } 
+            
             })
-            console.log(currUser)
-        if(currUser.name!==''){
-            if(!users.map(i=>i.name).includes(currUser.name)){
-                axios.post("http://localhost:8000/new",currUser)
-            }else{
-                axios.put('http://localhost:8000/user',currUser)
-            }
-            setDone(true)
-        } 
+            
         
     }, [currUser])
 
     
-        const responseGoogle=(res)=>{
-            console.log(res)
-            setCurrUser({...currUser,name:res.profileObj.givenName,password:res.accessToken, avatar:res.profileObj.imageUrl,isSignedIn:true})
-            
+        const responseGoogle=async(res)=>{
+            var temp=[...users]
+            if(temp.map(i=>i.name).includes(res.profileObj.givenName)){
+                const loginUser=users.filter(i=>i.name=res.profileObj.givenName)
+                setCurrUser(loginUser[0])
+            }else{
+                await axios.post("http://localhost:8000/new",{name:res.profileObj.givenName,password:res.accessToken,avatar:res.profileObj.imageUrl,to:'',groups:'',contacts:'',chatHistory:''})
+                setCurrUser({name:res.profileObj.givenName,password:res.accessToken,avatar:res.profileObj.imageUrl})
+            } 
           }
-        const  loginUser=async(e)=>{
+          const responseGoogleFailed=()=>{
+              console.log("GOOGLe login failed")
+          }
+        const  loginUser=(e)=>{
             e.preventDefault()
             if(login.name!==''){
-                const fetchUser=users.filter(i=>i.name===login.name)
-                console.log(fetchUser)
-                if(fetchUser.length===0){
+                const loginUser=users.filter(i=>i.name===login.name)
+                if(loginUser.length===0){
                     setLogin({...login,name:'',password:''})   
                 } else{
                     
-                    if(fetchUser[0].password===login.password){
-                        console.log(login)
-                        await setCurrUser({...currUser,name:login.name,password:login.password, avatar:"",isSignedIn:true})
-                        await axios.put('http://localhost:8000/user',currUser)
+                    if(loginUser[0].password===login.password){
+                        setCurrUser(loginUser[0])
                         
                     }else{
                         setLogin({...login,name:'',password:''})   
@@ -71,7 +75,6 @@ const Login = () => {
         const updateInput=()=>{
             const loginName=document.getElementById('username').value
             const loginPassword=document.getElementById('password').value
-            // const room=document.getElementById('room').value
             setLogin({...login,name:loginName,password:loginPassword})
         }
     return (
@@ -86,12 +89,6 @@ const Login = () => {
                     <label htmlFor="password">Password: </label>
                     <input type="password" name="password" id="password" value={login.password} onChange={updateInput} placeholder='username' placeholder='password' required/>
                 </div>
-                {/* <div className='loginInput'>
-                    <label htmlFor="room">ChatRoom:</label>
-                    <select name="room" id="room" value={login.room} onChange={updateInput}>
-                        {rooms.map(room=><option  key={uuidv4()}>{room}</option>)}      
-                    </select>
-                </div> */}
               <div className="loginBtn">
                   <Link  to='/signin' className='btn' id='signIn' >Sign in</Link>
                   <button className='btn' id='login' onClick={loginUser}>Login</button>
@@ -99,7 +96,7 @@ const Login = () => {
                 <GoogleLogin 
                     clientId="975117729259-pshu9p1c915crtu22crg5thjf0nlrn0q.apps.googleusercontent.com"
                     onSuccess={responseGoogle}
-                    onFailure={responseGoogle}
+                    onFailure={responseGoogleFailed}
                     cookiePolicy={'single_host_origin'}
                 >
                 </GoogleLogin>

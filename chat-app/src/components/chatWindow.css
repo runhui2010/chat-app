@@ -6,9 +6,17 @@
 }
 .chat_header{
     flex:1;
-    display: grid;
+    display: flex;
+    justify-content:space-around;
+    align-items: center;
     place-items:center;
     border-bottom: 1px solid black;
+}
+.chat_header .userInfo{
+    width: 15%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
 }
 .chat_body{
     flex:10;
