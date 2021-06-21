@@ -10,7 +10,7 @@ const SignIn = () => {
         password1:'',
         password2:''
     })
-    const [newAccount,setNewAccount]=useState({name:'',password:'',avatar:'',to:'',group:'',contacts:'',chatHistory:""})
+    const [newAccount,setNewAccount]=useState({name:'',password:'',avatar:'',to:''})
     const createAccount=(e)=>{
            if (register.username===''){
             document.getElementById('username').focus()

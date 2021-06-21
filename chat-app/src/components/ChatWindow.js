@@ -21,7 +21,8 @@ const ChatWindow = () => {
         time:'',
         socketID:''
     })
-    const [chat,setChat]=useState([])      
+    const [chat,setChat]=useState([])
+    const [peopleInGroup,setPeopleInGroup]=useState('')
    
     const socket=io.connect('http://localhost:8000'
     )
@@ -46,7 +47,8 @@ useEffect(async() => {
     const data=await res.json()
         setUsers(data)
         
-    
+    const size=users.filter(i=>i.to===currUser.to)
+    console.log(size)
 }, [currUser])
 
 useEffect(()=>{
@@ -79,9 +81,11 @@ ref.current.scrollIntoView({ behavior: "smooth" })
                 <div className='userInfo'>
                     {currUser.avatar===''?<Avatar name={currUser.name} round={true} size='30'/>:<img src={currUser.avatar} alt="" height='40px' style={{borderRadius:'50%'}}/>}
                     <span>{currUser.name}</span>
-                </div>
+                    </div>
+                    <span id='group'>{currUser.to}</span>
+                
             
-                <h2>{currUser.room}</h2>
+                {/* <h2>{currUser.room}</h2> */}
             </div>
             <div className="chat_body" >
                 {chat.filter(i=>i.recipient===currUser.room).map(m=>

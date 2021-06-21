@@ -1,6 +1,6 @@
 .side_window{
     border: 1px solid black;
-    flex: 1;
+    flex: 1.5;
     display: flex;
     flex-direction: column;
 }
@@ -19,14 +19,28 @@
     flex:4;
 }
 .group{
+    padding: 0;
+    margin: 0;
     flex:9;
     overflow:auto;
 }
 .group li{
-    margin: 10px;
-    padding:10px 0;
+    width: 90%;
+    margin: 1px auto;
+    padding:0;
+    display: flex;
     background-color: azure;
 }
+.group li span{
+    text-align: center;
+    flex:1;
+    padding: 10px;
+}
+.group li button{
+    background-color: rgb(243, 162, 162);
+    border: none;
+}
+
 .createGroup{
     width: 100%;
     margin: 0;
@@ -34,19 +48,18 @@
     display: flex;
     flex-direction: row;
 }
+.createGroup button{
+    flex:1;
+}
 
-ul{
-    padding: 0;
-}
-li{
-    list-style-type: none;
-    margin: 10px auto;
-    text-align: center;
-}
-.add{
-  
+.add {
+    width: 100%;
     flex:1.2;
-    text-align: center;
     font-size: 300%;
 }
+
+.display{
+    display: none;
+}
+
 

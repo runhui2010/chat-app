@@ -13,10 +13,14 @@
     border-bottom: 1px solid black;
 }
 .chat_header .userInfo{
-    width: 15%;
+    width: 30%;
     display: flex;
     justify-content: space-around;
     align-items: center;
+}
+.chat_header #group{
+    font-size: 200%;
+    font-weight: bolder;
 }
 .chat_body{
     flex:10;

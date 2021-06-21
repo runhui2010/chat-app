@@ -19,7 +19,7 @@ import UsersContext from './components/UsersContext';
 
 
 function App() {
-  const [currUser,setCurrUser]=useState({name:'',password:'',avatar:'',to:'',group:null,contacts:null,chatHistory:null})
+  const [currUser,setCurrUser]=useState({name:'',password:'',avatar:'',to:''})
   const [users,setUsers]=useState([])
   
 
