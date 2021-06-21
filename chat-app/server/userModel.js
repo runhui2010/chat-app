@@ -5,8 +5,8 @@ const userSchema={
     password:String,
     avatar:String,
     to:String,
-    groups:Object,
-    contacts:Object,
+    groups:Array,
+    contacts:Array,
     chatHistory:Object
 
 }

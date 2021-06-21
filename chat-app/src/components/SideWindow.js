@@ -11,28 +11,33 @@ const SideWindow = () => {
     const [currUser,setCurrUser]=useContext(CurrUserContext)
     const [groups,setGroups]=useState([])
     const [add,setAdd]=useState(false)
-
+    const [hideBtn,setHideBtn]=useState(false)
 
     // const socket=io.connect('http://localhost:8000')
     
 
     const changeGroup= (e)=>{
-        fetchGroup()
         document.getElementById('searchGroup').value=''
-        const value=e.target.id
-        setCurrUser({...currUser,to:value}) 
-        
+        const value=e.target.parentNode.id
+        console.log(value)
+        setCurrUser({...currUser,to:value})
+        setGroups(currUser.groups)
+        setHideBtn(false)
     }
     const createNewGroup=(e)=>{
         e.preventDefault()
         const value=document.getElementById('newGroupName').value
         document.getElementById('newGroupName').value=''
-        console.log(value!='' && !groups.includes(value) )
-        if(value!='' && !groups.includes(value) ){
+        console.log(groups)
+        if(value.trim()!='' && groups===null){
+            const temp=[value]
+            setCurrUser({...currUser,groups:temp})
+            setAdd(!add)
+        }else if(value.trim()!='' && !groups.includes(value) ){
             const temp=groups.slice()
             temp.push(value)
             console.log( temp)
-            setCurrUser({...currUser,groups:temp})
+            setCurrUser({...currUser,groups:temp,to:value})
             setAdd(!add)
         }else{
             document.getElementById('newGroupName').focus()
@@ -41,41 +46,50 @@ const SideWindow = () => {
     
     useEffect(async() => {
         setGroups(currUser.groups)
+        console.log(currUser.groups,groups)
         await axios.put('http://localhost:8000/user',currUser)
     }, [currUser])
 
     const deleteGroup=(e)=>{
         console.log("delete....")
-        const groupIndex=groups.indexOf(e.target.id)
+        const item=e.target.parentNode.id
+        console.log(item)
         const temp=groups.slice()
-        temp.splice(groupIndex,1)
+        temp.splice(temp.indexOf(item),1)
         console.log(temp)
-        setGroups(temp)
-        // setCurrUser({...currUser,groups:temp})        
+        setCurrUser({...currUser,groups:temp,to:''})
     }
     const searchGroup=()=>{
+        setHideBtn(true)
+        // hideBtn.current.classList.add('display')
         var value=document.getElementById('searchGroup').value
         if(!value==''){
             var temp=currUser.groups.filter(i=>i.includes(value))
             setGroups(temp)
         }else{
+            
             fetchGroup()
+            // hideBtn.current.classList.remove('display')
         }
+    }
+    const backToGroups=(e)=>{
+        e.preventDefault()
+        setAdd(false)
     }
 
    
-    useEffect(async()=>{
+    useEffect(()=>{
         fetchGroup()
     },[])
+    
     const fetchGroup=async()=>{
         await fetch('http://localhost:8000/users').then(res=>{
-            console.log(groups)
             if(res.ok)return res.json()
                 }).then(users=>{
-            console.log(users)
             const groups=users.filter(i=>i.name===currUser.name)
-            console.log(groups)
+            console.log(groups[0])
             setCurrUser(groups[0])
+            setHideBtn(false)
             
             })
     }
@@ -89,20 +103,20 @@ const SideWindow = () => {
             <ul className='group'>
                 
                 {
-                  groups.map((group,i)=>
-                      <li key={i} id={i} onClick={changeGroup} onDoubleClick={deleteGroup}>{group}</li>
+                  groups && groups.map((group,i)=>
+                      <li key={i} id={group} style={group===currUser.to?{backgroundColor:'lightgreen'}:{backgroundColor:'azure'}}><span onDoubleClick={changeGroup} >{group}</span> 
+                      {!hideBtn && <button onClick={deleteGroup} >delete</button>}
+                      </li>
                   )
                 }
                 
             </ul>
             {add && <form className="createGroup">
-                
-                <input type="text" id='newGroupName' placeholder='enter group name...' autoComplete='off'/>
-                <button type='submit' onClick={createNewGroup}>Create</button>
+                <button onClick={backToGroups}>Back</button>
+                <input type="text" id='newGroupName' placeholder='Enter new group name...' autoComplete='off'/>
+                <button type='submit'  onClick={createNewGroup}>Create</button>
             </form>}
-            {!add && <button className='add' onClick={()=>{
-                setAdd(!add)
-            }}>+</button>}
+            {!add && <button className='add' onClick={()=>{setAdd(!add)}}>+</button>}
             
         </div>
     )

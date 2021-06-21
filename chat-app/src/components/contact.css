@@ -1,6 +1,6 @@
 .contact_container{
     border: 1px solid black;
-    flex:1;
+    flex:1.5;
     display: flex;
     flex-direction: column;
 }
@@ -19,17 +19,32 @@
     justify-content: flex-start;
     align-items: center;
     overflow: auto;
+    padding:0;
+    margin: 0;
 }
 .contact_container .newConact{
     flex:1.2;
 }
+
 .contacts li{
+    margin: 1px auto;
+    width: 90%;
+    background-color: azure;
+    display: flex;
+}
+.contacts li .userInfo{
     margin: 5px;
     width:80%;
     display: flex;
     justify-content: space-around;
     align-items: center;
-}
-.contacts li span{
     flex:1;
+}
+.contacts li .userInfo span{
+    text-align: center;
+    flex:1;
+}
+.contacts li button{
+    background-color: rgb(243, 162, 162);
+    border: none;
 }

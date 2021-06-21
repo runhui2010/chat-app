@@ -21,21 +21,17 @@ const Login = () => {
     
 
     useEffect(async() => {
-       await fetch('http://localhost:8000/users').then(res=>{
-            if(res.ok)return res.json()
-                }).then(jsonRes=>{
-            setUsers(jsonRes)
+        const res=await fetch('http://localhost:8000/users')
+        const users= await res.json()
+               
+             setUsers(users)
             if(currUser.name!==''){ 
-                if(!jsonRes.map(i=>i.name).includes(currUser.name)){
+                if(!users.map(i=>i.name).includes(currUser.name)){
                     axios.post("http://localhost:8000/new",currUser)
                 }
               
                 setDone(true)
-            } 
-            
-            })
-            
-        
+            }      
     }, [currUser])
 
     
@@ -45,7 +41,7 @@ const Login = () => {
                 const loginUser=users.filter(i=>i.name=res.profileObj.givenName)
                 setCurrUser(loginUser[0])
             }else{
-                await axios.post("http://localhost:8000/new",{name:res.profileObj.givenName,password:res.accessToken,avatar:res.profileObj.imageUrl,to:'',groups:'',contacts:'',chatHistory:''})
+                await axios.post("http://localhost:8000/new",{name:res.profileObj.givenName,password:res.accessToken,avatar:res.profileObj.imageUrl,to:''})
                 setCurrUser({name:res.profileObj.givenName,password:res.accessToken,avatar:res.profileObj.imageUrl})
             } 
           }
