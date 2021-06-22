@@ -1,10 +1,11 @@
 const mongoose = require("mongoose")
 
-const roomSchema={
-    name:String
+const groupSchema={
+    name:String,
+    history:Array
 
 }
 
-const Room=mongoose.model("Room",roomSchema)
+const Group=mongoose.model("Group",groupSchema)
 
-module.exports=Room;
+module.exports=Group;
