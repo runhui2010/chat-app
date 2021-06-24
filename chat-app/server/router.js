@@ -63,7 +63,7 @@ router.route("/newGroup").post((req,res)=>{
     const name=req.body.name
     const history=req.body.history
     const group=new Group({ name:name,history:history})
-    user.save().then(data => {
+    group.save().then(data => {
         res.status(200).json(data);
     }).catch(err => {
         res.status(500).json({

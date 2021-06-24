@@ -26,29 +26,32 @@ const SideWindow = () => {
         setGroups(currUser.groups)
         setHideBtn(false)
     }
-    const createNewGroup=(e)=>{
+    const createNewGroup=async(e)=>{
         e.preventDefault()
         const value=document.getElementById('newGroupName').value
-        document.getElementById('newGroupName').value=''
-        console.log(chatGroup)
-        if(chatGroup.map(i=>i.name).includes(value)){
-            console.log("group already existed, search and join the group")
-        }else{
-            const tempGroup={name:value,history:null}
-            setChatGroup([...chatGroup,tempGroup])
-            if(value.trim()!='' && groups===null){
-                const tempUserGroup=[value]
-                setCurrUser({...currUser,groups:tempUserGroup})
-                setAdd(!add)
-            }else if(value.trim()!='' && !groups.includes(value) ){
-                const tempUserGroup=groups.slice()
-                tempUserGroup.push(value)
-                console.log( tempUserGroup)
-                setCurrUser({...currUser,groups:tempUserGroup,to:value})
-                setAdd(!add)
+        if(value.trim()!==''){
+            document.getElementById('newGroupName').value=''
+            console.log(chatGroup)
+            if(chatGroup.map(i=>i.name).includes(value)){
+                console.log("group already existed, search and join the group")
             }else{
-                document.getElementById('newGroupName').focus()
-            }
+                const tempGroup={name:value,history:null}
+                console.log(tempGroup)
+                setChatGroup([...chatGroup,tempGroup])
+                await axios.post('http://localhost:8000/newGroup',tempGroup)
+                if(value.trim()!='' && groups===null){
+                    const tempUserGroup=[value]
+                    setCurrUser({...currUser,groups:tempUserGroup})
+                    setAdd(!add)
+                }else if(value.trim()!='' && !groups.includes(value) ){
+                    const tempUserGroup=groups.slice()
+                    tempUserGroup.push(value)
+                    console.log( tempUserGroup)
+                    setCurrUser({...currUser,groups:tempUserGroup,to:value})
+                    setAdd(!add)
+                }else{
+                    document.getElementById('newGroupName').focus()
+                }
             
         }
         
@@ -69,12 +72,14 @@ const SideWindow = () => {
         //     document.getElementById('newGroupName').focus()
         // }
     }
+        }
+        
     
     useEffect(async() => {
         setGroups(currUser.groups)
         console.log(currUser.groups,groups)
         await axios.put('http://localhost:8000/user',currUser)
-        await axios.post('http://localhost:8000/newGroup',chatGroup)
+        
     }, [currUser])
 
     const deleteGroup=(e)=>{
