@@ -5,10 +5,12 @@ import UsersContext from './UsersContext'
 import io from 'socket.io-client'
 import { set } from 'mongoose'
 import axios from 'axios'
+import GroupsContext from './GroupsContext'
 
 const SideWindow = () => {
     const [users,setUsers] = useContext(UsersContext)
     const [currUser,setCurrUser]=useContext(CurrUserContext)
+    const [chatGroup,setChatGroup]=useContext(GroupsContext)
     const [groups,setGroups]=useState([])
     const [add,setAdd]=useState(false)
     const [hideBtn,setHideBtn]=useState(false)
@@ -24,30 +26,60 @@ const SideWindow = () => {
         setGroups(currUser.groups)
         setHideBtn(false)
     }
-    const createNewGroup=(e)=>{
+    const createNewGroup=async(e)=>{
         e.preventDefault()
         const value=document.getElementById('newGroupName').value
-        document.getElementById('newGroupName').value=''
-        console.log(groups)
-        if(value.trim()!='' && groups===null){
-            const temp=[value]
-            setCurrUser({...currUser,groups:temp})
-            setAdd(!add)
-        }else if(value.trim()!='' && !groups.includes(value) ){
-            const temp=groups.slice()
-            temp.push(value)
-            console.log( temp)
-            setCurrUser({...currUser,groups:temp,to:value})
-            setAdd(!add)
-        }else{
-            document.getElementById('newGroupName').focus()
+        if(value.trim()!==''){
+            document.getElementById('newGroupName').value=''
+            console.log(chatGroup)
+            if(chatGroup.map(i=>i.name).includes(value)){
+                console.log("group already existed, search and join the group")
+            }else{
+                const tempGroup={name:value,history:null}
+                console.log(tempGroup)
+                setChatGroup([...chatGroup,tempGroup])
+                await axios.post('http://localhost:8000/newGroup',tempGroup)
+                if(value.trim()!='' && groups===null){
+                    const tempUserGroup=[value]
+                    setCurrUser({...currUser,groups:tempUserGroup})
+                    setAdd(!add)
+                }else if(value.trim()!='' && !groups.includes(value) ){
+                    const tempUserGroup=groups.slice()
+                    tempUserGroup.push(value)
+                    console.log( tempUserGroup)
+                    setCurrUser({...currUser,groups:tempUserGroup,to:value})
+                    setAdd(!add)
+                }else{
+                    document.getElementById('newGroupName').focus()
+                }
+            
         }
+        
+        // const value=document.getElementById('newGroupName').value
+        // document.getElementById('newGroupName').value=''
+        // console.log(groups)
+        // if(value.trim()!='' && groups===null){
+        //     const temp=[value]
+        //     setCurrUser({...currUser,groups:temp})
+        //     setAdd(!add)
+        // }else if(value.trim()!='' && !groups.includes(value) ){
+        //     const temp=groups.slice()
+        //     temp.push(value)
+        //     console.log( temp)
+        //     setCurrUser({...currUser,groups:temp,to:value})
+        //     setAdd(!add)
+        // }else{
+        //     document.getElementById('newGroupName').focus()
+        // }
     }
+        }
+        
     
     useEffect(async() => {
         setGroups(currUser.groups)
         console.log(currUser.groups,groups)
         await axios.put('http://localhost:8000/user',currUser)
+        
     }, [currUser])
 
     const deleteGroup=(e)=>{
@@ -92,6 +124,9 @@ const SideWindow = () => {
             setHideBtn(false)
             
             })
+            await fetch('http://localhost:8000/groups').then(res=>{
+            if(res.ok)return res.json()
+                }).then(groups=>setChatGroup(groups))
     }
   
     return (

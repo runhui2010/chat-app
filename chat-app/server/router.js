@@ -1,7 +1,7 @@
 const { json } = require('express')
 const express=require('express')
 const Contact = require('./contactModel')
-const Room = require('./roomModel')
+const Group = require('./roomModel')
 const router=express.Router()
 const User=require('./userModel')
 
@@ -57,6 +57,48 @@ router.route('/user').put((req,res)=>{
     })
 })
 
+//
+router.route("/newGroup").post((req,res)=>{
+    console.log(req.body)
+    const name=req.body.name
+    const history=req.body.history
+    const group=new Group({ name:name,history:history})
+    group.save().then(data => {
+        res.status(200).json(data);
+    }).catch(err => {
+        res.status(500).json({
+          message: "Fail!",
+          error: err.message
+        });
+    });
+})
+
+
+router.route("/groups").get((req,res)=>{
+    Group.find(function(err,data){
+        res.status(200).send(data) 
+    }).catch(err => {
+        res.status(500).json({
+          message: "Fail!",
+          error: err.message
+        });
+    });
+})
+
+router.route('/group').put((req,res)=>{
+    const name=req.body.name
+    const history=req.body.history
+    Group.findOneAndUpdate({name:name},({ name:name,history:history}),{new:true},function(err,data){
+        if(err){
+            res.status(500).json({
+                message: "Fail!",
+                error: err.message
+              });
+        }else{
+            res.status(200).send(data) 
+        }
+    })
+})
 // router.route("/newRoom").post((req,res)=>{
 //     console.log(req.body)
 //     const name=req.body.name
