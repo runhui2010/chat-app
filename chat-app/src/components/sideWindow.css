@@ -39,7 +39,9 @@
 .group li button{
     background-color: rgb(243, 162, 162);
     border: none;
+    width: 25%;
 }
+
 
 .createGroup{
     width: 100%;

@@ -28,8 +28,9 @@ const SideWindow = () => {
     }
     const createNewGroup=async(e)=>{
         e.preventDefault()
-        const value=document.getElementById('newGroupName').value
-        if(value.trim()!==''){
+        const value=document.getElementById('newGroupName').value.trim()
+        
+        if(value!==''){
             document.getElementById('newGroupName').value=''
             console.log(chatGroup)
             if(chatGroup.map(i=>i.name).includes(value)){
@@ -47,7 +48,7 @@ const SideWindow = () => {
                     const tempUserGroup=groups.slice()
                     tempUserGroup.push(value)
                     console.log( tempUserGroup)
-                    setCurrUser({...currUser,groups:tempUserGroup,to:value})
+                    setCurrUser({...currUser,groups:tempUserGroup,to:value}) 
                     setAdd(!add)
                 }else{
                     document.getElementById('newGroupName').focus()
@@ -77,7 +78,7 @@ const SideWindow = () => {
     
     useEffect(async() => {
         setGroups(currUser.groups)
-        console.log(currUser.groups,groups)
+        console.log(chatGroup,groups)
         await axios.put('http://localhost:8000/user',currUser)
         
     }, [currUser])
@@ -92,21 +93,44 @@ const SideWindow = () => {
         setCurrUser({...currUser,groups:temp,to:''})
     }
     const searchGroup=()=>{
-        setHideBtn(true)
-        // hideBtn.current.classList.add('display')
         var value=document.getElementById('searchGroup').value
-        if(!value==''){
-            var temp=currUser.groups.filter(i=>i.includes(value))
-            setGroups(temp)
-        }else{
+        if(!add){
+            setHideBtn(true)
+            // hideBtn.current.classList.add('display')
+            if(!value==''){
+                var temp=currUser.groups.filter(i=>i.includes(value))
+                setGroups(temp)
+            }else{
             
-            fetchGroup()
-            // hideBtn.current.classList.remove('display')
+                fetchGroup()
+                // hideBtn.current.classList.remove('display')
+            }
+        }else{
+            if(!value==''){
+                var temp=chatGroup.filter(i=>i.name.includes(value))
+                console.log(temp)
+                setChatGroup(temp)
+            }else{
+            
+                fetchGroup()
+                // hideBtn.current.classList.remove('display')
+            }
         }
+        
     }
     const backToGroups=(e)=>{
         e.preventDefault()
         setAdd(false)
+    }
+    const addGroupFromChatGroup=(e)=>{
+        const groupName=e.target.parentNode.childNodes[0].id
+        console.log(groupName)
+        if(!groups.includes(groupName)){
+            const temp=[...groups,groupName]
+            setCurrUser({...currUser,groups:temp,to:groupName})
+            setAdd(!add)
+
+        }
     }
 
    
@@ -137,13 +161,18 @@ const SideWindow = () => {
             </div>
             <ul className='group'>
                 
-                {
-                  groups && groups.map((group,i)=>
+                {!add && groups && groups.map((group,i)=>
                       <li key={i} id={group} style={group===currUser.to?{backgroundColor:'lightgreen'}:{backgroundColor:'azure'}}><span onDoubleClick={changeGroup} >{group}</span> 
                       {!hideBtn && <button onClick={deleteGroup} >delete</button>}
                       </li>
                   )
                 }
+                {add && chatGroup && chatGroup.map((group,i)=>
+                    <li key={i} className='allGroups'><span id={group.name}>{group.name}</span><button style={groups.includes(group.name)?{backgroundColor:'lightgray'}:{backgroundColor:'green'}} onClick={addGroupFromChatGroup}>{groups.includes(group.name)?'Added':'add'}</button></li>
+                    
+                )}
+
+                
                 
             </ul>
             {add && <form className="createGroup">
