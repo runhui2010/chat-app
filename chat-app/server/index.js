@@ -20,23 +20,19 @@ app.use(express.json())
 mongoose.connect("mongodb+srv://run:8616716@cluster0.beu1u.mongodb.net/chat-app")
 app.use('/',require("./router"))
 
-let activeUsers = {};
 
-// io.on("connection", (socket) => {
-//   const id=socket.id
-
-//     socket.on('name',(data)=>{
+io.on("connection", (socket) => {
+    
+    socket.on('msg',(data)=>{
       
-//       activeUsers[id]=data
-//       console.log(activeUsers)
       
-//         io.emit('name',activeUsers)
+       socket.broadcast.emit('msg',{text:data.text,sender:data.sender,recipient:data.recipient,time:data.time})
       
         
       
-//     })
+    })
    
-// });
+});
 
 
 

@@ -22,7 +22,7 @@ import GroupsContext from './components/GroupsContext';
 function App() {
   const [currUser,setCurrUser]=useState({name:'',password:'',avatar:'',to:''})
   const [users,setUsers]=useState([])
-  const [chatGroup,setChatGroup]=useState({name:'',history:null})
+  const [chatGroup,setChatGroup]=useState([])
   
 
   return (

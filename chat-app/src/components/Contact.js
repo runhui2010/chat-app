@@ -54,7 +54,7 @@ const Contact = () => {
             console.log(e.target.parentNode.id)
             const temp=result.filter(i=>i.name===e.target.parentNode.id)
             console.log(contacts,temp)
-            const newContact={name:temp[0].name,avatar:temp[0].avatar}
+            const newContact={name:temp[0].name,avatar:temp[0].avatar,conversation:null}
             var contactsClone=null;
             if(contacts===null){
                 console.log('empty contacts')

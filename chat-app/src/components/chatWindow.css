@@ -18,6 +18,9 @@
     justify-content: space-around;
     align-items: center;
 }
+#peopleCount{
+    font-size: x-small;
+}
 .chat_header #group{
     font-size: 200%;
     font-weight: bolder;
