@@ -124,7 +124,8 @@ const SideWindow = () => {
     }
     const addGroupFromChatGroup=(e)=>{
         const groupName=e.target.parentNode.childNodes[0].id
-        console.log(groupName)
+        // const groupFromDatabase=chatGroup.filter(i=>i.name===groupName)
+        // console.log(groupFromDatabase)
         if(!groups.includes(groupName)){
             const temp=[...groups,groupName]
             setCurrUser({...currUser,groups:temp,to:groupName})

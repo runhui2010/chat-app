@@ -30,7 +30,6 @@ const ChatWindow = () => {
     useEffect(() => {
         socket.on('msg',(d)=>{
             setChat([...chat,d])
-            
             console.log(d)
         })
         
@@ -54,6 +53,19 @@ useEffect(async() => {
 
 useEffect(() => {
     const currUserChat=users.map(i=>i.contacts)
+    for(let i=0;i<currUserChat.length;i++){
+        for(let j=0;j<currUserChat[i].length;j++){
+            if(currUserChat[i][j].name===currUser.to){
+                var userConversation=currUserChat[i][j].conversation
+                if(userConversation){
+                    for(let k of userConversation){
+                        setChat([...chat,k])
+                    }
+                    
+                }
+            }
+        }
+    }
     console.log(currUserChat,currUser.to)
 }, [users])
 
@@ -72,7 +84,9 @@ const  sendMsg=(e)=>{
             setMsg({...msg,text:text,sender:sender,recipient:recipient,time:time})
             document.getElementById('text').value=""
              socket.emit('msg',newMsg)
-             setChat([...chat,newMsg])
+             const temp=chat.slice()
+             temp.push(newMsg)
+             setChat([...chat,temp])
     
     document.getElementById('text').focus()
 }   
@@ -89,12 +103,12 @@ ref.current.scrollIntoView({ behavior: "smooth" })
                     {currUser.avatar===''?<Avatar name={currUser.name} round={true} size='30'/>:<img src={currUser.avatar} alt="" height='40px' style={{borderRadius:'50%'}}/>}
                     <span>{currUser.name}</span>
                 </div>
-                    <span id='group'>{currUser.to} <span id='peopleCount'>{chatGroup.map(i=>i.name).includes(currUser.to)?users.map(i=>i.groups).filter(i=>i.includes(currUser.to)).length>0?'('+users.map(i=>i.groups).filter(i=>i.includes(currUser.to)).length+' people)':'':''} </span></span>
+                    <span id='group'>{currUser.to} <span id='peopleCount'>{chatGroup && chatGroup.map(i=>i.name).includes(currUser.to)?users.map(i=>i.groups).filter(i=>i.includes(currUser.to)).length>0?'('+users.map(i=>i.groups).filter(i=>i.includes(currUser.to)).length+' people)':'':''} </span></span>
                 
             
             </div> 
             <div className="chat_body" >
-                {chat.filter(i=>i.recipient===currUser.name).map(m=>
+                {chat && chat.filter(i=>i.recipient===currUser.name).map(m=>
                     <div key={uuidv4()} className={m.sender===currUser.name?'msg own':m.sender==='Admin'?'msg adminMsg':'msg'}>
                         <p className='sender'>{m.sender==='Admin'?'':m.sender}</p>
                         <h2 className={m.sender===currUser.name?'text':m.sender==='Admin'?'admin':'text others'}>{m.text}</h2>
